@@ -26,8 +26,9 @@ namespace Inkton.NesterWorks
 
         public NesterFacade()
         {
-			string appFileName = Path.Combine(AppFolder, "app.json");
-			FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
+            string appFileName = Path.Combine(AppFolder, "app.json");
+            FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
+
             using (StreamReader sr = new StreamReader(fs)) 
             {
                 string json = sr.ReadToEnd();
