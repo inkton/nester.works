@@ -9,7 +9,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
-namespace Inkton.NesterWorks.Logging 
+namespace Inkton.Nester.Logging 
 {
     public abstract class NesterLogQueue<T> : IDisposable
     {

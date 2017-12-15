@@ -2,10 +2,9 @@ using System;
 using RabbitMQ.Client;
 using System.Text;
 using System.Collections.Generic;
+using Inkton.Nester;
 
-using Inkton.Nest.Admin;
-
-namespace Inkton.NesterWorks.Queue
+namespace Inkton.Nester.Queue
 {
     public class NesterQueue : IDisposable
     {
@@ -15,15 +14,15 @@ namespace Inkton.NesterWorks.Queue
 
         public static string ExchangeName = "nest_works";
 
-        public NesterQueue(bool durable = false, bool autoDelete = false)
+        public NesterQueue(NesterService service, 
+            bool durable = false, bool autoDelete = false)
         {
             ConnectionFactory factory = new ConnectionFactory();
-            NesterFacade facade = new NesterFacade();
-            
-            factory.UserName = facade.RabbitMQ.User;
-            factory.Password = facade.RabbitMQ.Password;
-            factory.HostName = facade.RabbitMQ.Host;            
-            factory.VirtualHost = facade.RabbitMQ.Resource;
+
+            factory.UserName = service.User;
+            factory.Password = service.Password;
+            factory.HostName = service.Host;            
+            factory.VirtualHost = service.Resource;
 
             _connection = factory.CreateConnection();
  

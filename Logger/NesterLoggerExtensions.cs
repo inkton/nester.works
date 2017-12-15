@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Inkton.NesterWorks.Logging;
+using Inkton.Nester.Logging;
 
 namespace Microsoft.Extensions.Logging
 {

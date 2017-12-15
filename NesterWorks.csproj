@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Inkton NesterWorks</AssemblyTitle>
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
@@ -6,14 +6,16 @@
     <Copyright>Copyright (c) 2017 Inkton</Copyright>
     <Company>Inkton</Company>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>1.3.0</Version>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.0</TargetFrameworks>
+    <Version>1.3.1</Version>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <RootNamespace>Inkton.Nester</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\NestModel\**\*.cs" />
-  </ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="System.IO" Version="4.3.0" />
+    <Compile Include="..\nester.model\NesterModel\**\*.cs" />
+  </ItemGroup>  
+  <ItemGroup>
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
   </ItemGroup>

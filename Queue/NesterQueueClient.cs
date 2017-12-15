@@ -1,18 +1,16 @@
 using System;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using System.Collections.Generic;
+using Inkton.Nester;
 
-using Inkton.Nest.Admin;
-
-namespace Inkton.NesterWorks.Queue
+namespace Inkton.Nester.Queue
 {
     public class NesterQueueClient : NesterQueue
     {
-        public NesterQueueClient(bool wantCushionMsgs = false,
-            bool durable = false, bool autoDelete = false)
-            :base(durable, autoDelete)
+        public NesterQueueClient(NesterService service,
+            bool wantCushionMsgs = false, bool durable = false, 
+            bool autoDelete = false)
+            :base(service, durable, autoDelete)
         {
             string routingKey = Environment.GetEnvironmentVariable("NEST_TAG");
 

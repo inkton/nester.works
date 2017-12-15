@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace Inkton.NesterWorks.Logging
+namespace Inkton.Nester.Logging
 {
 	public struct LogMessage {
 		public readonly string Message;

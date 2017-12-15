@@ -1,22 +1,20 @@
-using System;
 using RabbitMQ.Client;
 using System.Text;
-using System.Collections.Generic;
+using Inkton.Nester.Models;
 
-using Inkton.Nest.Admin;
-
-namespace Inkton.NesterWorks.Queue
+namespace Inkton.Nester.Queue
 {
     public class NesterQueueServer : NesterQueue
     {
-        public NesterQueueServer(bool durable = false, bool autoDelete = false)
-            :base(durable, autoDelete)
+        public NesterQueueServer(NesterService service,
+            bool durable = false, bool autoDelete = false)
+            :base(service, durable, autoDelete)
         {
         }
 
         public void Send(
             string message,
-            Inkton.Nest.Admin.Nest nest = null,
+            Nest nest = null,
             int cushion = -1)
         {
             Send(Encoding.UTF8.GetBytes(message), 
@@ -25,7 +23,7 @@ namespace Inkton.NesterWorks.Queue
 
         public void Send(
             byte[] message,
-            Inkton.Nest.Admin.Nest nest = null,
+            Nest nest = null,
             int cushion = -1)
         {
             string routingKey = "#";

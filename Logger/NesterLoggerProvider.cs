@@ -24,7 +24,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
-namespace Inkton.NesterWorks.Logging 
+namespace Inkton.Nester.Logging 
 {	
 	/// <summary>
 	/// Generic Nester logger provider.
