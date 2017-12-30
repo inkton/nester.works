@@ -30,6 +30,8 @@ eg. Queue Server
 ```   
     Runtime runtime = new Runtime(QueueMode.Server);
     runtime.QueueSendType = "Order";    
+    
+    runtime.SendToNest(JsonConvert.SerializeObject(order), "stockallocator");
 ``` 
 eg. Queue Client
 ```
