@@ -86,22 +86,17 @@ namespace Inkton.Nester.Logging
 			}
 
 			DateTime now = DateTime.UtcNow;
-			long unixEpoch = (long)(now - new DateTime(1970, 1, 1)).TotalMilliseconds;
+			const long TicksPerMicrosecond = 10;
+			long unixEpochTicks = (long)(now.Ticks - new DateTime(1970, 1, 1).Ticks);
+			long unixEpochMicroSeconds = unixEpochTicks / TicksPerMicrosecond;
 			
 			// default formatting logic
 			if (!string.IsNullOrEmpty(message)) 
 			{
-				provider.Log(unixEpoch, now.ToString("MM/dd/yyyy HH:mm:ss.ffffff"),
+				provider.Log(unixEpochMicroSeconds, now.ToString("MM/dd/yyyy HH:mm:ss.ffffff"),
 						nestTag, cushionIndex, GetShortLogLevel(logLevel),
 						logName, eventId, message);
 			}
-
-			if (exception != null) {
-				// exception message
-				provider.Log(unixEpoch, now.ToString("MM/dd/yyyy HH:mm:ss.ffffff"),
-						nestTag, cushionIndex, GetShortLogLevel(logLevel),
-						logName, eventId, exception.ToString());					
-			}				
 		}
 	}
 }

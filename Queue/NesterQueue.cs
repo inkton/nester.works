@@ -39,7 +39,7 @@ namespace Inkton.Nester.Queue
 
         public IModel Channel
         {
-            get { return _channel; }
+            get { return _channel; } 
         }
 
         public string QueueName
@@ -47,16 +47,24 @@ namespace Inkton.Nester.Queue
             get { return _queueName; }
         }
 
-        public void Dispose()
+        public void Close()
         {
-            if (_connection != null)
-            {
-                _connection.Dispose();
-            }
             if (_channel != null)
             {
+                _channel.Close(200, "Goodbye");
                 _channel.Dispose();
             }
+
+            if (_connection != null)
+            {
+                _connection.Close();
+                _connection.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
     }
 }

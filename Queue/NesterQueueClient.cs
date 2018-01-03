@@ -4,9 +4,9 @@ using RabbitMQ.Client.Events;
 using Inkton.Nester;
 
 namespace Inkton.Nester.Queue
-{
+{    
     public class NesterQueueClient : NesterQueue
-    {
+    {        
         public NesterQueueClient(NesterService service,
             bool wantCushionMsgs = false, bool durable = false, 
             bool autoDelete = false)
@@ -27,17 +27,24 @@ namespace Inkton.Nester.Queue
         }
         
         public BasicGetResult GetMessage(
-            bool noAck = true)
+            bool noAck = false)
         {
-            return _channel.BasicGet(_queueName, noAck);
+            BasicGetResult result = _channel.BasicGet(_queueName, noAck);
+
+            if (result != null && !noAck)
+            {
+                _channel.BasicAck(result.DeliveryTag, false);
+            }
+
+            return result;
         }
         
         public EventingBasicConsumer GetEventingConsumer(   
-            bool autoAck = true)
+            bool autoAck = false)
         {
             EventingBasicConsumer consumer = new EventingBasicConsumer(_channel);
             _channel.BasicConsume(queue: _queueName, 
-                autoAck: autoAck, consumer: consumer);            
+                autoAck: autoAck, consumer: consumer);      
             return consumer;
         }
     }

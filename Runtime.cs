@@ -19,11 +19,23 @@ namespace Inkton.Nester
         public string Resource;        
     }
 
+    [Flags]
+    public enum QueueMode : byte 
+    {
+        None = 0x0,            
+        Client = 0x1,
+        Server = 0x2,            
+    }
+
     public class Runtime
     {
+        public delegate object ReceiveParser(IDictionary<string, object> headers, string message);
+
+        private NesterQueueClient _queueClient;
+        private NesterQueueServer _queueServer;        
         private ExpandoObject _settings;
 
-        public Runtime()
+        public Runtime(QueueMode mode = QueueMode.None)
         {
             string appFolder = Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
             string appFileName = Path.Combine(appFolder, "app.json");
@@ -34,60 +46,102 @@ namespace Inkton.Nester
                 string json = sr.ReadToEnd();
                 _settings = JsonConvert.DeserializeObject<ExpandoObject>(json);
             }
+            
+            if ((mode & QueueMode.Client) == QueueMode.Client)
+            {
+                _queueClient = new NesterQueueClient(RabbitMQ);
+            }
+            if ((mode & QueueMode.Server) == QueueMode.Server)
+            {
+                _queueServer = new NesterQueueServer(RabbitMQ);            
+            }
         }
 
         public string AppTag
         {
-            get {
-                return Environment.GetEnvironmentVariable("NEST_APP_TAG");
-                }            
+            get 
+            {
+                return Settings["tag"] as string;
+            }           
         }
 
         public string ServicesPassword
         {
-            get {
-                return Environment.GetEnvironmentVariable("NEST_SERVICES_PASSWORD");
-                }            
+            get 
+            {
+                return Settings["services_password"] as string;
+            }            
         }
 
         public string AppFolder
         {
-            get {
+            get 
+            {
                 return Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
-                }            
+            }            
         }
 
         public string NestTag
         {
-            get { 
+            get
+            { 
                 return Environment.GetEnvironmentVariable("NEST_TAG"); 
-                }
+            }
         }
 
         public int CushionIndex
         {
-            get {
+            get 
+            {
                 return int.Parse(Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX"));
-                }            
+            }            
         }
 
         public int ContactId
         {
-            get {
+            get
+            {
                 return int.Parse(Environment.GetEnvironmentVariable("NEST_CONTACT_ID"));
-                }            
+            }            
         }
 
         public string ContactEmail
         {
-            get { 
+            get
+            { 
                 return Environment.GetEnvironmentVariable("NEST_CONTACT_EMAIL"); 
-                }
+            }
         }
-                
+
+        public string QueueSendType
+        {
+            set
+            {
+                Dictionary<string, object> headers = 
+                    new Dictionary<string, object>();
+                headers["Type"] = value;
+                _queueServer.Headers = headers;
+            }
+        }
+
+        public NesterQueueClient QueueClient
+        {
+            get 
+            {   
+                return _queueClient; 
+            }
+        }
+
+        public NesterQueueServer QueueServer
+        {
+            get 
+            { 
+                return _queueServer; 
+            }
+        }
+
         public void SendToNest(string message, string tag, int cushion = -1)
         {
-            NesterQueueServer queueServer = new NesterQueueServer(RabbitMQ);            
             Nest target = new Nest();
 
             foreach (var nest in Settings["nests"] as List<dynamic>)
@@ -95,25 +149,23 @@ namespace Inkton.Nester
                 if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
                 {
                     Inkton.Nester.Cloud.Object.CopyExpandoPropertiesTo(nest, target);
-                    queueServer.Send(message, target, cushion);
+                    _queueServer.Send(message, target, cushion);
                     break;
                 }
             }            
         }   
 
-        public T Receive<T>(bool noAck = false)
+        public object Receive(ReceiveParser parse)
         {
-            NesterQueueClient queueClient = new 
-                NesterQueueClient(RabbitMQ);
-            BasicGetResult result = queueClient.GetMessage(noAck);
-            T payload = default(T);
+            BasicGetResult result = _queueClient.GetMessage();
+            object payload = null;
 
             if (result != null) 
             {
                 IBasicProperties props = result.BasicProperties;
                 byte[] body = result.Body;
-                var messageJson = System.Text.Encoding.Default.GetString(body);
-                payload = JsonConvert.DeserializeObject<T>(messageJson);
+                var message = System.Text.Encoding.Default.GetString(body);
+                payload = parse(props.Headers, message);
             }
 
             return payload;
@@ -128,27 +180,30 @@ namespace Inkton.Nester
         }
 
         public NesterService MySQL
+
         {
-            get { 
+            get 
+            { 
                 NesterService service = new NesterService();
                 service.Host = Environment.GetEnvironmentVariable("NEST_MYSQL_HOST");
                 service.User = AppTag;
                 service.Password = ServicesPassword;
                 service.Resource = AppTag;
                 return service;
-                }
+            }
         }
 
         public NesterService RabbitMQ
         {
-            get {
+            get 
+            {
                 NesterService service = new NesterService();
                 service.Host = Environment.GetEnvironmentVariable("NEST_RABBITMQ_HOST");
                 service.User = AppTag;
                 service.Password = ServicesPassword;
                 service.Resource = "/";
                 return service;
-                }
+            }
         }
     }
 }
