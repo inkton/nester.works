@@ -1,6 +1,12 @@
 # Introduction 
 NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services.  
 
+## Dependency Chart
+
+| Nester.Works Version    | Dependency    | Version       |
+| ----------------------- | ------------- | ------------- |
+| 1.5.0                   | nester.model  | 1.0.1         |
+
 # Getting Started
 ## 1.	Installation process
 ```
