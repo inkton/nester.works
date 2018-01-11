@@ -1,21 +1,28 @@
 # Introduction 
-NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services.  
+NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services. The source code complies with .NET Standard 2.0.
 
-## Dependency Chart
+## Dependencies
 
-| Nester.Works Version    | Dependency    | Version       |
-| ----------------------- | ------------- | ------------- |
-| 1.5.0                   | nester.model  | 1.0.1         |
+| Current Release   |  Dependency                 |
+| ----------------- | --------------------------- |
+| 1.5.0             | nester.model v1.0.1         |
 
 # Getting Started
-## 1.	Installation process
+
+## 1.	Source code Install
+```
+git clone --branch v1.0.1 https://github.com/inkton/nester.model.git
+git clone --branch v1.5.0 https://github.com/inkton/nester.works.git
+cd nester.works
+dotnet restore
+dotnet build
+```
+
+## 2.	Installation via NuGet
 ```
 dotnet add package Inkton.NesterWorks
 or Install-Package Inkton.NesterWorks
 ```
-
-## 2.	Software dependencies
-The library depends on https://github.com/inkton/nest.model module.
 
 ## 3.  Runtime information
   
