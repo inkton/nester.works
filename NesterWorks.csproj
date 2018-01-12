@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyTitle>Inkton NesterWorks</AssemblyTitle>
-    <AssemblyName>Inkton.NesterWorks</AssemblyName>
-    <Description>A utility to manage run-time nest.yt services.</Description>
+    <Title>Inkton NesterWorks</Title>
+    <PackageId>Inkton.NesterWorks</PackageId>
+    <PackageVersion>1.5.1</PackageVersion>
+    <PackageTags>paas,docker,nest.yt</PackageTags>
+    <Authors>nest.yt</Authors>
+    <Description>A utility to manage run-time nest.yt services</Description>
     <Copyright>Copyright (c) 2018 Inkton</Copyright>
     <Company>Inkton</Company>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>1.5.0</Version>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Inkton.Nester</RootNamespace>
     <PackageLicenseUrl>https://github.com/inkton/nester.works/blob/master/LICENSE</PackageLicenseUrl>
@@ -14,8 +16,10 @@
     <RepositoryUrl>https://github.com/inkton/nester.works</RepositoryUrl>
     <RepositoryType>github</RepositoryType>
     <PackageReleaseNotes>
-		uses nester.model v1.0.1
-   </PackageReleaseNotes>
+        added cloud result
+    </PackageReleaseNotes>
+    <AssemblyTitle>Inkton NesterWorks</AssemblyTitle>
+    <AssemblyName>Inkton.NesterWorks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../nester.model/NesterModel/**/*.cs" />
