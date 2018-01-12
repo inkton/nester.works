@@ -2,16 +2,23 @@
   <PropertyGroup>
     <AssemblyTitle>Inkton NesterWorks</AssemblyTitle>
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
-    <Description>A utility to manage run-time Nest services.</Description>
-    <Copyright>Copyright (c) 2017 Inkton</Copyright>
+    <Description>A utility to manage run-time nest.yt services.</Description>
+    <Copyright>Copyright (c) 2018 Inkton</Copyright>
     <Company>Inkton</Company>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Version>1.3.1</Version>
+    <Version>1.5.0</Version>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Inkton.Nester</RootNamespace>
+    <PackageLicenseUrl>https://github.com/inkton/nester.works/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/inkton</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/inkton/nester.works</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageReleaseNotes>
+		uses nester.model v1.0.1
+   </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\nester.model\NesterModel\**\*.cs" />
+    <Compile Include="../nester.model/NesterModel/**/*.cs" />
   </ItemGroup>  
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
