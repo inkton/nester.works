@@ -26,77 +26,74 @@ using Microsoft.Extensions.Configuration;
 
 namespace Inkton.Nester.Logging 
 {
-	/// <summary>
-	/// Generic Nester logger that works in a similar way to standard ConsoleLogger.
-	/// </summary>
-	public class NesterLogger : ILogger 
-	{
-		private readonly string logName;
-		private readonly string nestTag;
-		private readonly int cushionIndex;
-		
-		private readonly NesterLoggerProvider provider;
+    public class NesterLogger : ILogger 
+    {
+        private readonly string logName;
+        private readonly string nestTag;
+        private readonly int cushionIndex;
+        
+        private readonly NesterLoggerProvider provider;
 
-		public NesterLogger(string logName, NesterLoggerProvider provider) {
-			this.logName = logName;
+        public NesterLogger(string logName, NesterLoggerProvider provider) {
+            this.logName = logName;
             this.nestTag = Environment.GetEnvironmentVariable("NEST_TAG");
             this.cushionIndex = Int32.Parse(Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX"));
-			this.provider = provider;
-		}
-		
-		public IDisposable BeginScope<TState>(TState state) {
-			return null;
-		}
+            this.provider = provider;
+        }
+        
+        public IDisposable BeginScope<TState>(TState state) {
+            return null;
+        }
 
-		public bool IsEnabled(LogLevel logLevel) {
-			return logLevel>=provider.MinLevel;
-		}
+        public bool IsEnabled(LogLevel logLevel) {
+            return logLevel>=provider.MinLevel;
+        }
 
-		string GetShortLogLevel(LogLevel logLevel) {
-			switch (logLevel) {
-				case LogLevel.Trace:
-					return "TRCE";
-				case LogLevel.Debug:
-					return "DBUG";
-				case LogLevel.Information:
-					return "INFO";
-				case LogLevel.Warning:
-					return "WARN";
-				case LogLevel.Error:
-					return "FAIL";
-				case LogLevel.Critical:
-					return "CRIT";
-			}
-			return logLevel.ToString().ToUpper();
-		}
+        string GetShortLogLevel(LogLevel logLevel) {
+            switch (logLevel) {
+                case LogLevel.Trace:
+                    return "TRCE";
+                case LogLevel.Debug:
+                    return "DBUG";
+                case LogLevel.Information:
+                    return "INFO";
+                case LogLevel.Warning:
+                    return "WARN";
+                case LogLevel.Error:
+                    return "FAIL";
+                case LogLevel.Critical:
+                    return "CRIT";
+            }
+            return logLevel.ToString().ToUpper();
+        }
 
-		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
-			Exception exception, Func<TState, Exception, string> formatter) {
-			if (!IsEnabled(logLevel)) {
-				return;
-			}
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+            Exception exception, Func<TState, Exception, string> formatter) {
+            if (!IsEnabled(logLevel)) {
+                return;
+            }
 
-			if (formatter == null) {
-				throw new ArgumentNullException(nameof(formatter));
-			}
-			
-			string message = null;
-			if (null != formatter) {
-				message = formatter(state, exception);
-			}
+            if (formatter == null) {
+                throw new ArgumentNullException(nameof(formatter));
+            }
+            
+            string message = null;
+            if (null != formatter) {
+                message = formatter(state, exception);
+            }
 
-			DateTime now = DateTime.UtcNow;
-			const long TicksPerMicrosecond = 10;
-			long unixEpochTicks = (long)(now.Ticks - new DateTime(1970, 1, 1).Ticks);
-			long unixEpochMicroSeconds = unixEpochTicks / TicksPerMicrosecond;
-			
-			// default formatting logic
-			if (!string.IsNullOrEmpty(message)) 
-			{
-				provider.Log(unixEpochMicroSeconds, now.ToString("MM/dd/yyyy HH:mm:ss.ffffff"),
-						nestTag, cushionIndex, GetShortLogLevel(logLevel),
-						logName, eventId, message);
-			}
-		}
-	}
+            DateTime now = DateTime.UtcNow;
+            const long TicksPerMicrosecond = 10;
+            long unixEpochTicks = (long)(now.Ticks - new DateTime(1970, 1, 1).Ticks);
+            long unixEpochMicroSeconds = unixEpochTicks / TicksPerMicrosecond;
+            
+            // default formatting logic
+            if (!string.IsNullOrEmpty(message)) 
+            {
+                provider.Log(unixEpochMicroSeconds, now.ToString("MM/dd/yyyy HH:mm:ss.ffffff"),
+                        nestTag, cushionIndex, GetShortLogLevel(logLevel),
+                        logName, eventId, message);
+            }
+        }
+    }
 }

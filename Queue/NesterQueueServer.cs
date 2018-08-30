@@ -52,14 +52,14 @@ namespace Inkton.Nester.Queue
 
         public void SetDefaults()
         {
-            _props.ClearExpiration();            
+            _props.ClearExpiration();
             _props.ClearPriority();
             _props.ClearHeaders();
         }
 
         public void Send(
             string message,
-            Nest nest = null,            
+            Nest nest = null,
             int cushion = -1)
         {
             Send(Encoding.UTF8.GetBytes(message), 
