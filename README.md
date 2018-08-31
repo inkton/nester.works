@@ -5,14 +5,14 @@ NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services. T
 
 | Current Release   |  Dependency                 |
 | ----------------- | --------------------------- |
-| 1.5.1             | nester.model v1.0.1         |
+| 1.5.3             | nester.model v1.0.1         |
 
 # Getting Started
 
 ## 1.   Source code Install
 ```
 git clone --branch v1.0.1 https://github.com/inkton/nester.model.git
-git clone --branch v1.5.1 https://github.com/inkton/nester.works.git
+git clone --branch v1.5.3 https://github.com/inkton/nester.works.git
 cd nester.works
 dotnet restore
 dotnet build

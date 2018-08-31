@@ -21,11 +21,12 @@ namespace Inkton.Nester.Queue
 
             factory.UserName = service.User;
             factory.Password = service.Password;
-            factory.HostName = service.Host;            
+            factory.HostName = service.Host;
             factory.VirtualHost = service.Resource;
+            factory.ContinuationTimeout = TimeSpan.FromSeconds(service.TimeoutSec);
 
             _connection = factory.CreateConnection();
- 
+
             _channel = _connection.CreateModel();
             _channel.ExchangeDeclare(exchange: ExchangeName, type: "topic", 
                 durable: durable, autoDelete : autoDelete);

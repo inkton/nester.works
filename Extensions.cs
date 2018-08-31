@@ -10,10 +10,11 @@ namespace Inkton.Nester
     public static class Extensions 
     {
         public static IServiceCollection AddNester(
-            this IServiceCollection services, QueueMode mode = QueueMode.None)
+            this IServiceCollection services, 
+            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 50)
         {
             services.AddTransient<Runtime>(
-                runtime => new Runtime(mode));
+                runtime => new Runtime(mode, serviceTimeoutSec));
             return services;
         }
 
