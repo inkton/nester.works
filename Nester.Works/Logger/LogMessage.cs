@@ -20,18 +20,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Inkton.Nester.Logging
 {
-	public struct LogMessage {
-		public readonly string Message;
-		public readonly LogLevel LogLevel;
-		public readonly EventId EventId;
-		public readonly Exception Exception;
+    public struct LogMessage {
+        public readonly string Message;
+        public readonly LogLevel LogLevel;
+        public readonly EventId EventId;
+        public readonly Exception Exception;
 
-		internal LogMessage(LogLevel level, EventId eventId, string message, Exception ex) {
-			Message = message;
-			LogLevel = level;
-			EventId = eventId;
-			Exception = ex;
-		}
+        internal LogMessage(LogLevel level, EventId eventId, string message, Exception ex) {
+            Message = message;
+            LogLevel = level;
+            EventId = eventId;
+            Exception = ex;
+        }
 
-	}
+    }
 }

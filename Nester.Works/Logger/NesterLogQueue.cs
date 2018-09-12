@@ -13,33 +13,33 @@ namespace Inkton.Nester.Logging
 {
     public abstract class NesterLogQueue<T> : IDisposable
     {
-		protected readonly BlockingCollection<T> _entryQueue = new BlockingCollection<T>(1024);
+        protected readonly BlockingCollection<T> _entryQueue = new BlockingCollection<T>(1024);
         private readonly Task _processQueueTask;
 
         public NesterLogQueue()
         {
-			_processQueueTask = Task.Factory.StartNew(
-				Process,
-				this,
-				TaskCreationOptions.LongRunning);            
+            _processQueueTask = Task.Factory.StartNew(
+                Process,
+                this,
+                TaskCreationOptions.LongRunning);
         }
 
-		virtual public void Clear()
-		{
-			_entryQueue.CompleteAdding();
+        virtual public void Clear()
+        {
+            _entryQueue.CompleteAdding();
 
-			try {
+            try {
                 // the same as in ConsoleLogger
-				_processQueueTask.Wait(1500);
-			} catch (TaskCanceledException) 
+                _processQueueTask.Wait(1500);
+            } catch (TaskCanceledException) 
             { }
             catch (AggregateException ex) 
                 when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
-		}
+        }
 
-		virtual public bool Add(T message)
+        virtual public bool Add(T message)
         {
-			if (_entryQueue.IsAddingCompleted)
+            if (_entryQueue.IsAddingCompleted)
                 return false;
             
             try {
@@ -51,31 +51,31 @@ namespace Inkton.Nester.Logging
 
         abstract protected void Handle(T message);
 
-		virtual protected void Process()
-		{
-			foreach (var message in _entryQueue.GetConsumingEnumerable())
+        virtual protected void Process()
+        {
+            foreach (var message in _entryQueue.GetConsumingEnumerable())
             {
-				Handle(message);
-			}            
+                Handle(message);
+            }            
         }        
 
-		static private void Process(object state)
+        static private void Process(object state)
         {
-			var logger = (NesterLogQueue<T>)state;
-			logger.Process();
-		}
+            var logger = (NesterLogQueue<T>)state;
+            logger.Process();
+        }
 
-		public void Dispose()
-		{
-			Clear();
-		}        
+        public void Dispose()
+        {
+            Clear();
+        }        
     }
 
     public class NesterFileLogQueue : NesterLogQueue<string>
     {
-		private readonly string LogFileName;
+        private readonly string LogFileName;
         object fileLock = new object();
-		private readonly bool Append = true;
+        private readonly bool Append = true;
 
         public NesterFileLogQueue(bool append)
         {
@@ -91,7 +91,7 @@ namespace Inkton.Nester.Logging
             string nestTag = Environment.GetEnvironmentVariable("NEST_TAG");
             string cushionIndex = Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX");
 
-			LogFileName = Path.Combine(logFolder, "nest." + nestTag + "." + cushionIndex + ".u" );
+            LogFileName = Path.Combine(logFolder, "nest." + nestTag + "." + cushionIndex + ".u" );
         }
 
         override protected void Handle(string message)
@@ -102,15 +102,15 @@ namespace Inkton.Nester.Logging
             }
         }
 
-		override public bool Add(string message)
+        override public bool Add(string message)
         {
-			if (!base.Add(message))
+            if (!base.Add(message))
             {
                 // use lock and write directly to a Nester?..
                 lock (fileLock) {
                     System.IO.File.AppendAllText(LogFileName, message+"\n");
                 }                
-			}
+            }
 
             return true;
         }

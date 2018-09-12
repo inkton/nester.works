@@ -22,7 +22,7 @@ namespace Inkton.Nester.Cloud
         }
 
         public void SetSuccess(
-            string entity,            
+            string entity,
             T data,
             string notes = null)
         {

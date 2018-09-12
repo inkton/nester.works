@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using RabbitMQ.Client;
 using System.Text;
-using Inkton.Nester.Models;
+using Inkton.Nest.Model;
 
 namespace Inkton.Nester.Queue
 {
@@ -52,14 +52,14 @@ namespace Inkton.Nester.Queue
 
         public void SetDefaults()
         {
-            _props.ClearExpiration();            
+            _props.ClearExpiration();
             _props.ClearPriority();
             _props.ClearHeaders();
         }
 
         public void Send(
             string message,
-            Nest nest = null,            
+            Inkton.Nest.Model.Nest nest = null,
             int cushion = -1)
         {
             Send(Encoding.UTF8.GetBytes(message), 
@@ -68,7 +68,7 @@ namespace Inkton.Nester.Queue
 
         public void Send(
             byte[] message,
-            Nest nest = null,
+            Inkton.Nest.Model.Nest nest = null,
             int cushion = -1)
         {
             string routingKey = "#";

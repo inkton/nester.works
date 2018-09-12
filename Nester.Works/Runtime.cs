@@ -28,7 +28,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Inkton.Nester.Models;
+using Inkton.Nest.Cloud;
 using Inkton.Nester.Queue;
 
 namespace Inkton.Nester
@@ -38,7 +38,8 @@ namespace Inkton.Nester
         public string Host;
         public string User;
         public string Password;
-        public string Resource;        
+        public string Resource;      
+        public int TimeoutSec;  
     }
 
     [Flags]
@@ -56,12 +57,15 @@ namespace Inkton.Nester
         private NesterQueueClient _queueClient;
         private NesterQueueServer _queueServer;        
         private ExpandoObject _settings;
+        private int _serviceTimeoutSec;
 
-        public Runtime(QueueMode mode = QueueMode.None)
+        public Runtime(QueueMode mode = QueueMode.None, int serviceTimeoutSec = 50)
         {
             string appFolder = Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
             string appFileName = Path.Combine(appFolder, "app.json");
             FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
+
+            _serviceTimeoutSec = serviceTimeoutSec;
 
             using (StreamReader sr = new StreamReader(fs))
             {
@@ -164,14 +168,13 @@ namespace Inkton.Nester
 
         public void SendToNest(string message, string tag, int cushion = -1)
         {
-            Nest target = new Nest();
-
             foreach (var nest in Settings["nests"] as List<dynamic>)
-            {
+            {                
                 if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
                 {
-                    Inkton.Nester.Cloud.Object.CopyExpandoPropertiesTo(nest, target);
-                    _queueServer.Send(message, target, cushion);
+                    var serialized = JsonConvert.SerializeObject(nest);
+                    _queueServer.Send(message, 
+                        JsonConvert.DeserializeObject<Inkton.Nest.Model.Nest>(serialized), cushion);
                     break;
                 }
             }            
@@ -211,6 +214,7 @@ namespace Inkton.Nester
                 service.User = AppTag;
                 service.Password = ServicesPassword;
                 service.Resource = AppTag;
+                service.TimeoutSec = _serviceTimeoutSec;
                 return service;
             }
         }
@@ -224,6 +228,7 @@ namespace Inkton.Nester
                 service.User = AppTag;
                 service.Password = ServicesPassword;
                 service.Resource = "/";
+                service.TimeoutSec = _serviceTimeoutSec;
                 return service;
             }
         }
