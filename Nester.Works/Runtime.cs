@@ -28,7 +28,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Inkton.Nester.Models;
+using Inkton.Nest.Cloud;
 using Inkton.Nester.Queue;
 
 namespace Inkton.Nester
@@ -168,14 +168,13 @@ namespace Inkton.Nester
 
         public void SendToNest(string message, string tag, int cushion = -1)
         {
-            Nest target = new Nest();
-
             foreach (var nest in Settings["nests"] as List<dynamic>)
-            {
+            {                
                 if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
                 {
-                    Inkton.Nester.Cloud.Object.CopyExpandoPropertiesTo(nest, target);
-                    _queueServer.Send(message, target, cushion);
+                    var serialized = JsonConvert.SerializeObject(nest);
+                    _queueServer.Send(message, 
+                        JsonConvert.DeserializeObject<Inkton.Nest.Model.Nest>(serialized), cushion);
                     break;
                 }
             }            

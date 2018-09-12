@@ -5,11 +5,11 @@
     <PackageVersion>1.5.3</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
-    <Description>A utility to manage run-time nest.yt services</Description>
+    <Description>A utility to manage run-time Nest.yt services</Description>
     <Copyright>Copyright (c) 2018 Inkton</Copyright>
     <Company>Inkton</Company>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Inkton.Nester</RootNamespace>
     <PackageLicenseUrl>https://github.com/inkton/nester.works/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/inkton</PackageProjectUrl>
@@ -19,15 +19,16 @@
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../nester.model/NesterModel/**/*.cs" />
-  </ItemGroup>  
+    <ProjectReference Include="../../nest.model/Nest.Model/Nest.Model.csproj" />
+  </ItemGroup>    
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
   </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.2" />       
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />     
