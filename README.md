@@ -1,13 +1,29 @@
-# Introduction 
-NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services. The source code complies with .NET Standard 2.0.
+# Nester Works
 
-## Dependencies
+NesterWorks is a library used by nest.yt apps to access nest.yt PaaS services on the Linux Server end. The source code complies with .NET Standard 2.0.
 
-| Current Release   |  Dependency                 |
-| ----------------- | --------------------------- |
-| 1.5.1             | nester.model v1.0.1         |
+## Structured Logging
 
-# Getting Started
+The logs produced by the server-end can be queried by client apps. The [Logs API](https://github.com/inkton/nest.api/wiki/The-Logs) is used to query the logs. The NesterLog is a service that can be configured the following fashion.
+
+```c#
+    public class Socket
+    {
+        public static void Main(string[] args)
+        {
+            CreateWebHostBuilder(args).Build().Run();
+        }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddNesterLog();
+                })
+                .UseStartup<Startup>();
+    }
+```
+
 
 ## 1.   Source code Install
 ```
