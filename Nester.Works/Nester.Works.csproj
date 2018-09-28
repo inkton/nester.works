@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Title>Inkton NesterWorks</Title>
     <PackageId>Inkton.NesterWorks</PackageId>
-    <PackageVersion>1.5.4</PackageVersion>
+    <PackageVersion>1.5.5</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
     <Description>A utility to manage run-time Nest.yt services</Description>
@@ -19,8 +19,8 @@
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Inkton.NestModel" Version="1.0.5" />
-  </ItemGroup>    
+    <PackageReference Include="Inkton.NestModel" Version="1.0.8" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
@@ -28,10 +28,10 @@
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.2" />       
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />     
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.2" />
   </ItemGroup>
     <ItemGroup>
