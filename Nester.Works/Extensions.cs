@@ -14,7 +14,7 @@ namespace Inkton.Nester
     {
         public static IServiceCollection AddNester(
             this IServiceCollection services, 
-            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 50)
+            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 60)
         {
             services.AddTransient<Runtime>(
                 runtime => new Runtime(mode, serviceTimeoutSec));

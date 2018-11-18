@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Title>Inkton NesterWorks</Title>
     <PackageId>Inkton.NesterWorks</PackageId>
-    <PackageVersion>1.5.6</PackageVersion>
+    <PackageVersion>1.6.0</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
     <Description>A utility to manage run-time Nest.yt services</Description>
@@ -19,8 +19,8 @@
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Inkton.NestModel" Version="1.0.9" />
-  </ItemGroup>
+    <PackageReference Include="Inkton.NestModel" Version="1.1.0" />
+  </ItemGroup>  
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
