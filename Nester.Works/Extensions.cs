@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Inkton.Nest.Cloud;
 using Inkton.Nester.Logging;
 
@@ -14,7 +15,7 @@ namespace Inkton.Nester
     {
         public static IServiceCollection AddNester(
             this IServiceCollection services, 
-            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 60)
+            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 250)
         {
             services.AddTransient<Runtime>(
                 runtime => new Runtime(mode, serviceTimeoutSec));
@@ -58,36 +59,64 @@ namespace Inkton.Nester
             return factory;
         }
 
-        public static OkObjectResult NestResult(
+        // These controller extensions help with generating standard
+        // responses that can be extracted by the Nester.Library functions
+        // The embedded type is prefixed with the type-name for type 
+        // identification and safety 
+        // https://github.com/inkton/nester.works/wiki#nestyt-standard-responses
+
+        public static JsonResult NestResult(
             this ControllerBase controller,
             int code, 
             string text = null, 
             string notes = null) 
         {
-            return controller.Ok(ResultFactory.Create(
-                code, text, notes));
+            Result<EmptyPayload> result = new Result<EmptyPayload>();
+            result.Code = code;
+            result.Text = text;
+            result.Notes = notes;
+
+            return new JsonResult(result);
         }
 
-        public static OkObjectResult NestResultSingle<T>(
+        public static JsonResult NestResultSingle<T>(
             this ControllerBase controller,
             T data,
             int code = 0, 
             string text = null, 
             string notes = null ) where T : CloudObject, new()
         {
-            return controller.Ok(ResultFactory.CreateSingle<T>(
-                data, code, text, notes));
+            Result<T> result = new Result<T>();
+            result.Code = code;
+            result.Text = text;
+            result.Notes = notes;
+            result.Data = new DataContainer<T>();
+            result.Data.Payload = data;
+            
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new DataContainerResolver(new T().GetObjectName());
+
+            return new JsonResult(result, serializerSettings);
         }
 
-        public static OkObjectResult NestResultMultiple<T>(
+        public static JsonResult NestResultMultiple<T>(
             this ControllerBase controller,
             List<T> data,
             int code = 0, 
             string text = null, 
             string notes = null ) where T : CloudObject, new()
         {
-            return controller.Ok(ResultFactory.CreateMultiple<T>(
-                data, code, text, notes));
+            Result<List<T>> result = new Result<List<T>>();
+            result.Code = 0;
+            result.Text = text;
+            result.Notes = notes;
+            result.Data = new DataContainer<List<T>>();
+            result.Data.Payload = data;
+
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new DataContainerResolver(new T().GetCollectionName());
+
+            return new JsonResult(result, serializerSettings);
         }
     }
 }
