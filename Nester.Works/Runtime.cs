@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Dynamic;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -30,6 +31,10 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Inkton.Nest.Cloud;
 using Inkton.Nester.Queue;
+using Inkton.Nest.Model;
+
+using System.Text.RegularExpressions;
+
 
 namespace Inkton.Nester
 {
@@ -63,7 +68,7 @@ namespace Inkton.Nester
         {
             string appFolder = Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
             string appFileName = Path.Combine(appFolder, "app.json");
-            FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(appFileName  , FileMode.Open, FileAccess.Read);
 
             _serviceTimeoutSec = serviceTimeoutSec;
 
@@ -123,6 +128,14 @@ namespace Inkton.Nester
             }            
         }
 
+        public string ComponentId
+        {
+            get
+            { 
+                return NestTag + "." + CushionIndex.ToString(); 
+            }
+        }
+
         public int ContactId
         {
             get
@@ -136,17 +149,6 @@ namespace Inkton.Nester
             get
             { 
                 return Environment.GetEnvironmentVariable("NEST_CONTACT_EMAIL"); 
-            }
-        }
-
-        public string QueueSendType
-        {
-            set
-            {
-                Dictionary<string, object> headers = 
-                    new Dictionary<string, object>();
-                headers["Type"] = value;
-                _queueServer.Headers = headers;
             }
         }
 
@@ -166,36 +168,6 @@ namespace Inkton.Nester
             }
         }
 
-        public void SendToNest(string message, string tag, int cushion = -1)
-        {
-            foreach (var nest in Settings["nests"] as List<dynamic>)
-            {                
-                if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
-                {
-                    var serialized = JsonConvert.SerializeObject(nest);
-                    _queueServer.Send(message, 
-                        JsonConvert.DeserializeObject<Inkton.Nest.Model.Nest>(serialized), cushion);
-                    break;
-                }
-            }            
-        }   
-
-        public object Receive(ReceiveParser parse)
-        {
-            BasicGetResult result = _queueClient.GetMessage();
-            object payload = null;
-
-            if (result != null) 
-            {
-                IBasicProperties props = result.BasicProperties;
-                byte[] body = result.Body;
-                var message = System.Text.Encoding.Default.GetString(body);
-                payload = parse(props.Headers, message);
-            }
-
-            return payload;
-        }
-
         public IDictionary<String, Object> Settings
         {
             get
@@ -205,7 +177,6 @@ namespace Inkton.Nester
         }
 
         public NesterService MySQL
-
         {
             get 
             { 
@@ -231,6 +202,121 @@ namespace Inkton.Nester
                 service.TimeoutSec = _serviceTimeoutSec;
                 return service;
             }
+        }
+        
+        public Inkton.Nest.Model.Nest GetNest(string tag)
+        {
+            foreach (var nest in Settings["nests"] as List<dynamic>)
+            {     
+                if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
+                {
+                    var serialized = JsonConvert.SerializeObject(nest);
+                    return JsonConvert.DeserializeObject<Inkton.Nest.Model.Nest>(serialized);
+                }
+            }
+
+            return null;
+        }
+
+        public void Send<T>(T message, Inkton.Nest.Model.Nest nest,
+            Type type = null, string correlationId = null, int cushion = -1)
+        {    
+            // The server sends a message to the client. The type 
+            // header identify the type of message arrived.    
+
+            _queueClient.Send(message, nest, type, correlationId, cushion);
+        }
+
+        public T Receive<T>(bool checkType = false)
+        {
+            // The client receives the message, confirms
+            // the type if necessary and serializes the
+            // message.
+
+            var message = _queueServer.GetMessage();
+
+            T result = default(T);
+
+            if (message != null) {
+                IBasicProperties props = message.BasicProperties;
+                _queueServer.LastCorrelationId = props.CorrelationId;
+
+                byte[] body = message.Body;
+                var process = true;
+
+                if (checkType && 
+                    props.Headers != null && 
+                    props.Headers.ContainsKey("Type"))
+                {
+                    string messageType = Encoding.UTF8.GetString(
+                        props.Headers["Type"] as byte[]);
+                    Type returnType = typeof(T);
+
+                    process = (returnType.GetType().FullName == messageType);
+                }
+                
+                if (process)
+                {
+                    var messageBody = Encoding.UTF8.GetString(body);
+                    result = JsonConvert.DeserializeObject<T>(messageBody);
+                }
+            }
+
+            return result;
+        }
+
+        public ResultSingle<T> ReceiveSingle<T>() where T : CloudObject, new() 
+        {
+            // The client sends back a result. the result has
+            // a code and other detail to indicate whether the
+            // result was a success. the data secion stores the
+            // query result. The result is single if only one 
+            // result is sent and multiple if it sends back a 
+            // collection of data.
+
+            var message = _queueServer.GetMessage();
+
+            ResultSingle<T> result = null;
+
+            if (message != null) {
+                IBasicProperties props = message.BasicProperties;
+                _queueServer.LastCorrelationId = props.CorrelationId;
+
+                byte[] body = message.Body;
+
+                T seed = new T();
+                var messageBody = Encoding.UTF8.GetString(body);
+                result = ResultSingle<T>.ConvertObject(messageBody, seed);
+            }
+           
+            return result;
+        }
+
+        public ResultMultiple<T> ReceiveMultiple<T>() where T : CloudObject, new() 
+        {
+            // The client sends back a result. the result has
+            // a code and other detail to indicate whether the
+            // result was a success. the data secion stores the
+            // query result. The result is single if only one 
+            // result is sent and multiple if it sends back a 
+            // collection of data.
+
+            var message = _queueServer.GetMessage();
+
+            ResultMultiple<T> result = null;
+
+            if (message != null) {
+                IBasicProperties props = message.BasicProperties;
+                _queueServer.LastCorrelationId = props.CorrelationId;
+
+                byte[] body = message.Body;
+
+                T seed = new T();
+                var messageBody = Encoding.UTF8.GetString(body);
+                result = ResultMultiple<T>.ConvertObject(messageBody, seed);
+            }
+           
+            return result;
         }
     }
 }
