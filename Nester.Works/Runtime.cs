@@ -31,6 +31,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Inkton.Nest.Cloud;
 using Inkton.Nester.Queue;
+using Inkton.Nester.Notification;
 using Inkton.Nest.Model;
 
 using System.Text.RegularExpressions;
@@ -59,25 +60,37 @@ namespace Inkton.Nester
     {
         public delegate object ReceiveParser(IDictionary<string, object> headers, string message);
 
+        private Chirpy _chirpy;
         private NesterQueueClient _queueClient;
-        private NesterQueueServer _queueServer;        
-        private ExpandoObject _settings;
+        private NesterQueueServer _queueServer;
+        private IDictionary<String, Object> _settings;
         private int _serviceTimeoutSec;
 
         public Runtime(QueueMode mode = QueueMode.None, int serviceTimeoutSec = 50)
         {
             string appFolder = Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
             string appFileName = Path.Combine(appFolder, "app.json");
-            FileStream fs = new FileStream(appFileName  , FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
 
             _serviceTimeoutSec = serviceTimeoutSec;
 
             using (StreamReader sr = new StreamReader(fs))
             {
                 string json = sr.ReadToEnd();
-                _settings = JsonConvert.DeserializeObject<ExpandoObject>(json);
+                _settings = JsonConvert.DeserializeObject<ExpandoObject>(json) 
+                    as IDictionary<String, Object>;
             }
             
+            if (_settings["collaboration"] != null)
+            {
+                var collab = _settings["collaboration"] as IDictionary<String, Object>;
+                string token = collab["access_token"] as string;
+                var inWebHook = collab["incoming_webhook"] as IDictionary<String, Object>;
+                string channel = inWebHook["channel"] as string;
+
+                _chirpy = new Chirpy(token, channel);
+            }
+
             if ((mode & QueueMode.Client) == QueueMode.Client)
             {
                 _queueClient = new NesterQueueClient(RabbitMQ);
@@ -92,7 +105,7 @@ namespace Inkton.Nester
         {
             get 
             {
-                return Settings["tag"] as string;
+                return _settings["tag"] as string;
             }           
         }
 
@@ -100,7 +113,7 @@ namespace Inkton.Nester
         {
             get 
             {
-                return Settings["services_password"] as string;
+                return _settings["services_password"] as string;
             }            
         }
 
@@ -152,6 +165,14 @@ namespace Inkton.Nester
             }
         }
 
+        public Chirpy Chirpy
+        {
+            get 
+            {   
+                return _chirpy; 
+            }
+        }
+
         public NesterQueueClient QueueClient
         {
             get 
@@ -172,7 +193,7 @@ namespace Inkton.Nester
         {
             get
             {
-                return _settings as IDictionary<String, Object>;
+                return _settings;
             }
         }
 
@@ -206,7 +227,7 @@ namespace Inkton.Nester
         
         public Inkton.Nest.Model.Nest GetNest(string tag)
         {
-            foreach (var nest in Settings["nests"] as List<dynamic>)
+            foreach (var nest in _settings["nests"] as List<dynamic>)
             {     
                 if ((nest as IDictionary<String, Object>)["tag"] as string == tag)
                 {
