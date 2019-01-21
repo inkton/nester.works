@@ -29,7 +29,7 @@ namespace Inkton.Nester.Queue
 {
     public class NesterQueueChannel : IDisposable
     {
-        private string _exchange;
+        private NesterQueueExchange _exchange;
         private IModel _model;
         private bool _durable;
         private bool _autoDelete;
@@ -37,13 +37,16 @@ namespace Inkton.Nester.Queue
         private IBasicProperties _props;
         private string _defaultQueue;
 
-        public NesterQueueChannel(string exchange, IConnection connection,
+        public NesterQueueChannel(NesterQueueExchange exchange, IConnection connection,
             bool durable = false, bool autoDelete = true)
         {
-            _exchange = exchange;
-            _model = connection.CreateModel();
+            _exchange = exchange;                                                
             _durable = durable;
             _autoDelete = autoDelete;
+
+            _model = connection.CreateModel();
+            _model.ExchangeDeclare(exchange: _exchange.Name,
+                                    type: "topic");
 
             SetDefaults();
         }
@@ -70,6 +73,7 @@ namespace Inkton.Nester.Queue
             _props = _model.CreateBasicProperties();
             _props.ContentType = "application/json";
             _props.ReplyTo =
+                    _exchange.Name + "." +
                     Environment.GetEnvironmentVariable("NEST_TAG") + "." + 
                     Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX");
             _props.ClearExpiration();
@@ -90,7 +94,7 @@ namespace Inkton.Nester.Queue
                 _props.CorrelationId = correlationId;
             }
 
-            _model.BasicPublish(exchange: _exchange, 
+            _model.BasicPublish(exchange: _exchange.Name, 
                 routingKey: routingKey, basicProperties: _props, body: message);
 
             return _props.CorrelationId;
@@ -109,7 +113,7 @@ namespace Inkton.Nester.Queue
         public void QueueBind(string routingKey)
         {
             _model.QueueBind(queue: _defaultQueue,
-                exchange: _exchange, routingKey: routingKey);
+                exchange: _exchange.Name, routingKey: routingKey);
         }
 
         public void Close()

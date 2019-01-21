@@ -33,15 +33,15 @@ namespace Inkton.Nester.Queue
     public class NesterQueueClient : NesterQueueExchange
     {
         public NesterQueueClient(NesterService service,
-            bool durable = false, bool autoDelete = true)
-            :base(service, durable, autoDelete)
+            Enviorenment enviorenment, bool durable = false, bool autoDelete = true)
+            :base(service, enviorenment, durable, autoDelete)
         {
         }
 
         private string GetQueue(
             Inkton.Nest.Model.Nest nest, int cushion = -1)
         {
-            string routingKey = nest.Tag;
+            string routingKey = Name + "." + nest.Tag;
 
             if (cushion > 0)
             {
@@ -58,7 +58,7 @@ namespace Inkton.Nester.Queue
         public NesterQueueRPCClient CreateRPCEndpoint(
             Inkton.Nest.Model.Nest nest, int cushion = -1)
         {
-            return new NesterQueueRPCClient(ExchangeName, 
+            return new NesterQueueRPCClient(Name, 
                 GetQueue(nest, cushion), _connection);
         }
 

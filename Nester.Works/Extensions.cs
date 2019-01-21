@@ -37,10 +37,12 @@ namespace Inkton.Nester
     {
         public static IServiceCollection AddNester(
             this IServiceCollection services, 
-            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 250)
+            QueueMode mode = QueueMode.None, int serviceTimeoutSec = 180)
         {
             services.AddTransient<Runtime>(
-                runtime => new Runtime(mode, serviceTimeoutSec));
+                runtime => new Runtime(mode,                     
+                    serviceTimeoutSec,
+                    Enviorenment.Production));
             return services;
         }
 
@@ -91,14 +93,18 @@ namespace Inkton.Nester
             this ControllerBase controller,
             int code, 
             string text = null, 
-            string notes = null) 
+            string notes = null,
+            int htmlStatus = 200) 
         {
             Result<EmptyPayload> result = new Result<EmptyPayload>();
             result.Code = code;
             result.Text = text;
             result.Notes = notes;
 
-            return new JsonResult(result);
+            JsonResult jResult = new JsonResult(result);
+            jResult.StatusCode = htmlStatus;
+
+            return jResult;    
         }
 
         public static JsonResult NestResultSingle<T>(
@@ -106,7 +112,8 @@ namespace Inkton.Nester
             T data,
             int code = 0, 
             string text = null, 
-            string notes = null ) where T : CloudObject, new()
+            string notes = null,
+            int htmlStatus = 200) where T : CloudObject, new()
         {
             Result<T> result = new Result<T>();
             result.Code = code;
@@ -118,7 +125,10 @@ namespace Inkton.Nester
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.ContractResolver = new DataContainerResolver(new T().GetObjectName());
 
-            return new JsonResult(result, serializerSettings);
+            JsonResult jResult = new JsonResult(result, serializerSettings);
+            jResult.StatusCode = htmlStatus;
+
+            return jResult;            
         }
 
         public static JsonResult NestResultMultiple<T>(
@@ -126,7 +136,8 @@ namespace Inkton.Nester
             List<T> data,
             int code = 0, 
             string text = null, 
-            string notes = null ) where T : CloudObject, new()
+            string notes = null,
+            int htmlStatus = 200) where T : CloudObject, new()
         {
             Result<List<T>> result = new Result<List<T>>();
             result.Code = 0;
@@ -138,7 +149,10 @@ namespace Inkton.Nester
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.ContractResolver = new DataContainerResolver(new T().GetCollectionName());
 
-            return new JsonResult(result, serializerSettings);
+            JsonResult jResult = new JsonResult(result, serializerSettings);
+            jResult.StatusCode = htmlStatus;
+
+            return jResult;
         }
     }
 }

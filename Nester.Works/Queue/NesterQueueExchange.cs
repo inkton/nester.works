@@ -29,17 +29,20 @@ namespace Inkton.Nester.Queue
 {
     public class NesterQueueExchange : IDisposable
     {
-        public readonly string ExchangeName = "amq.topic";
+        private Enviorenment _enviorenment;
         protected IConnection _connection;
         protected NesterQueueChannel _channel;
 
         protected bool _durable;
         protected bool _autodelete;
-        protected string _lastCorrelationId;
+        protected string _lastCorrelationId = "0";
 
         public NesterQueueExchange(NesterService service, 
-            bool durable = false, bool autoDelete = true)
+            Enviorenment enviorenment, bool durable = false, 
+            bool autoDelete = true)
         {
+            _enviorenment = enviorenment;
+
             ConnectionFactory factory = new ConnectionFactory();
             factory.UserName = service.User;
             factory.Password = service.Password;
@@ -58,8 +61,16 @@ namespace Inkton.Nester.Queue
         public NesterQueueChannel CreateChannel()
         {
             return new NesterQueueChannel(
-                ExchangeName, _connection, 
+                this, _connection, 
                 _durable, _autodelete);
+        }
+
+        public string Name
+        {
+            get {
+                return "nest." + 
+                    _enviorenment.ToString().ToLower();
+                }
         }
 
         public IConnection Connection
