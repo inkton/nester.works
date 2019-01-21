@@ -28,13 +28,10 @@ using RabbitMQ.Client.MessagePatterns;
 namespace Inkton.Nester.Queue
 {    
     public class NesterQueueServer : NesterQueueExchange
-    {        
-        private readonly string QueueName = Environment
-            .GetEnvironmentVariable("NEST_TAG");
-
+    {
         public NesterQueueServer(NesterService service,
-            bool durable = false, bool autoDelete = true)
-            :base(service, durable, autoDelete) 
+            Enviorenment enviorenment, bool durable = false, bool autoDelete = true)
+            :base(service, enviorenment, durable, autoDelete) 
         {
             DefaultChannel.QueueDeclare(QueueName);
 
@@ -44,6 +41,15 @@ namespace Inkton.Nester.Queue
             // The specific nest cushion endpoint
             string cushionIndex = Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX");
             DefaultChannel.QueueBind(QueueName + "." + cushionIndex);
+        }
+
+        public string QueueName
+        {
+            get                        
+            {
+                return Name + "."  + Environment
+                    .GetEnvironmentVariable("NEST_TAG");
+            }
         }
 
         public BasicGetResult GetMessage(

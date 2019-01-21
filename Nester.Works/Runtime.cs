@@ -25,6 +25,7 @@ using System.IO;
 using System.Text;
 using System.Dynamic;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
@@ -33,9 +34,6 @@ using Inkton.Nest.Cloud;
 using Inkton.Nester.Queue;
 using Inkton.Nester.Notification;
 using Inkton.Nest.Model;
-
-using System.Text.RegularExpressions;
-
 
 namespace Inkton.Nester
 {
@@ -46,6 +44,13 @@ namespace Inkton.Nester
         public string Password;
         public string Resource;      
         public int TimeoutSec;  
+    }
+
+    public enum Enviorenment
+    {
+        Production,
+        Development,
+        Integration
     }
 
     [Flags]
@@ -60,19 +65,34 @@ namespace Inkton.Nester
     {
         public delegate object ReceiveParser(IDictionary<string, object> headers, string message);
 
+        private Enviorenment _enviorenment;
         private Chirpy _chirpy;
         private NesterQueueClient _queueClient;
         private NesterQueueServer _queueServer;
         private IDictionary<String, Object> _settings;
-        private int _serviceTimeoutSec;
+        private int _serviceTimeoutSec = 180;
 
-        public Runtime(QueueMode mode = QueueMode.None, int serviceTimeoutSec = 50)
+        public Runtime()
+        {
+            _enviorenment = Enviorenment.Production;
+            Setup(QueueMode.None);
+        }
+
+        public Runtime(QueueMode mode,
+            int serviceTimeoutSec = 180,
+            Enviorenment enviorenment = Enviorenment.Production)
+        {
+            _enviorenment = enviorenment;
+            _serviceTimeoutSec = serviceTimeoutSec;
+
+            Setup(mode);
+        }
+
+        public virtual void Setup(QueueMode mode)
         {
             string appFolder = Environment.GetEnvironmentVariable("NEST_FOLDER_APP");
             string appFileName = Path.Combine(appFolder, "app.json");
             FileStream fs = new FileStream(appFileName, FileMode.Open, FileAccess.Read);
-
-            _serviceTimeoutSec = serviceTimeoutSec;
 
             using (StreamReader sr = new StreamReader(fs))
             {
@@ -93,12 +113,26 @@ namespace Inkton.Nester
 
             if ((mode & QueueMode.Client) == QueueMode.Client)
             {
-                _queueClient = new NesterQueueClient(RabbitMQ);
+                _queueClient = new NesterQueueClient(
+                    RabbitMQ, _enviorenment);
             }
             if ((mode & QueueMode.Server) == QueueMode.Server)
             {
-                _queueServer = new NesterQueueServer(RabbitMQ);            
+                _queueServer = new NesterQueueServer(
+                    RabbitMQ, _enviorenment); 
             }
+        }
+
+        public int ServiceTimeoutSec 
+        {
+            get
+            {
+                return _serviceTimeoutSec;
+            }
+            set
+            {
+                _serviceTimeoutSec = value;
+            }        
         }
 
         public string AppTag
@@ -225,7 +259,7 @@ namespace Inkton.Nester
             }
         }
         
-        public Inkton.Nest.Model.Nest GetNest(string tag)
+        public virtual Inkton.Nest.Model.Nest GetNest(string tag)
         {
             foreach (var nest in _settings["nests"] as List<dynamic>)
             {     
@@ -239,7 +273,7 @@ namespace Inkton.Nester
             return null;
         }
 
-        public void Send<T>(T message, Inkton.Nest.Model.Nest nest,
+        public virtual void Send<T>(T message, Inkton.Nest.Model.Nest nest,
             Type type = null, string correlationId = null, int cushion = -1)
         {    
             // The server sends a message to the client. The type 
@@ -248,7 +282,7 @@ namespace Inkton.Nester
             _queueClient.Send(message, nest, type, correlationId, cushion);
         }
 
-        public T Receive<T>(bool checkType = false)
+        public virtual T Receive<T>(bool checkType = false)
         {
             // The client receives the message, confirms
             // the type if necessary and serializes the
@@ -286,7 +320,7 @@ namespace Inkton.Nester
             return result;
         }
 
-        public ResultSingle<T> ReceiveSingle<T>() where T : CloudObject, new() 
+        public virtual ResultSingle<T> ReceiveSingle<T>() where T : CloudObject, new() 
         {
             // The client sends back a result. the result has
             // a code and other detail to indicate whether the
@@ -306,14 +340,14 @@ namespace Inkton.Nester
                 byte[] body = message.Body;
 
                 T seed = new T();
-                var messageBody = Encoding.UTF8.GetString(body);
+                var messageBody = Encoding.UTF8.GetString(body);              
                 result = ResultSingle<T>.ConvertObject(messageBody, seed);
             }
            
             return result;
         }
 
-        public ResultMultiple<T> ReceiveMultiple<T>() where T : CloudObject, new() 
+        public virtual ResultMultiple<T> ReceiveMultiple<T>() where T : CloudObject, new() 
         {
             // The client sends back a result. the result has
             // a code and other detail to indicate whether the

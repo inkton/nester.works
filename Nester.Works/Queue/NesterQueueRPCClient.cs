@@ -36,6 +36,10 @@ namespace Inkton.Nester.Queue
 
         private IBasicProperties _props;
 
+        public NesterQueueRPCClient()
+        {
+        }
+
         public NesterQueueRPCClient(string exchange,
             string routingKey, IConnection connection, 
             int timeoutMilliseconds = 5000)
@@ -102,26 +106,26 @@ namespace Inkton.Nester.Queue
             }
         }
 
-        public void SetDefaults()
+        public virtual void SetDefaults()
         {
             _props = _model.CreateBasicProperties();
             _props.ContentType = "application/json";
             _props.Headers = new Dictionary<string, object>();
         }
 
-        public byte[] Call(string function, byte[] message)
+        public virtual byte[] Call(string function, byte[] message)
         {
             IBasicProperties replyProp;
             return Call(function, message, out replyProp);
         }
 
-        public byte[] Call(string function, byte[] message, out IBasicProperties replyProp)
+        public virtual byte[] Call(string function, byte[] message, out IBasicProperties replyProp)
         {
             _props.Headers["Function"] = function;
             return _client.Call(_props, message, out replyProp);
         }
 
-        public void Close()
+        public virtual void Close()
         {
             if (_model != null)
             {
