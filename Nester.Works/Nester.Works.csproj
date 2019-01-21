@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>Inkton NesterWorks</Title>
     <PackageId>Inkton.NesterWorks</PackageId>
-    <PackageVersion>1.6.3</PackageVersion>
+    <PackageVersion>1.6.4</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
     <Description>A utility to manage run-time Nest.yt services</Description>
