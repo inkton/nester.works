@@ -20,10 +20,7 @@
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SlackAPI;
 
 namespace Inkton.Nester.Notification

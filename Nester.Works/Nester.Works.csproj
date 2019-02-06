@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Title>Inkton NesterWorks</Title>
     <PackageId>Inkton.NesterWorks</PackageId>
-    <PackageVersion>1.6.4</PackageVersion>
+    <PackageVersion>1.6.5</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
     <Description>A utility to manage run-time Nest.yt services</Description>
@@ -11,9 +11,9 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Inkton.Nester</RootNamespace>
-    <PackageLicenseUrl>https://github.com/inkton/nester.works/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/inkton</PackageProjectUrl>
     <RepositoryUrl>https://github.com/inkton/nester.works</RepositoryUrl>
+    <license>LICENSE</license>
     <RepositoryType>github</RepositoryType>
     <AssemblyTitle>Inkton NesterWorks</AssemblyTitle>
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
@@ -41,4 +41,7 @@
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />  
     <PackageReference Include="SlackAPI" Version="1.0.7" />  
   </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Cloud\Result.cs" />
+    </ItemGroup>
 </Project>

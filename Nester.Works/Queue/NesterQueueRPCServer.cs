@@ -22,7 +22,6 @@
 
 using System;
 using System.Text;
-using System.Collections.Generic;
 using System.Reflection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.MessagePatterns;
