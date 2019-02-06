@@ -39,8 +39,8 @@ namespace Inkton.Nester.Queue
             DefaultChannel.QueueBind(QueueName + ".*");
 
             // The specific nest cushion endpoint
-            string cushionIndex = Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX");
-            DefaultChannel.QueueBind(QueueName + "." + cushionIndex);
+            DefaultChannel.QueueBind(QueueName + "." + 
+                Environment.GetEnvironmentVariable("NEST_CUSHION_INDEX"));
         }
 
         public string QueueName

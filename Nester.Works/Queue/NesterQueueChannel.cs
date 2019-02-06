@@ -21,9 +21,8 @@
 */
 
 using System;
-using RabbitMQ.Client;
-using System.Text;
 using System.Collections.Generic;
+using RabbitMQ.Client;
 
 namespace Inkton.Nester.Queue
 {

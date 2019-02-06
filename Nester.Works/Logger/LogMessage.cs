@@ -32,8 +32,6 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Inkton.Nester.Logging

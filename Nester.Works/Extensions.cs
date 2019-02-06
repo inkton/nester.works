@@ -20,9 +20,7 @@
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -58,8 +56,25 @@ namespace Inkton.Nester
                          runtime.MySQL.Host,
                          runtime.MySQL.Resource,
                          runtime.MySQL.User,
-                         runtime.MySQL.Password, contextLifetime, optionsLifetime)
-            ));
+                         runtime.MySQL.Password)),
+                         contextLifetime, optionsLifetime);
+            return services;
+        }
+
+        public static IServiceCollection AddNesterGeoraphyL<TContext>(
+            this IServiceCollection services,
+            ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
+            ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) where TContext : DbContext
+        {
+            Runtime runtime = new Runtime();
+            services.AddDbContext<TContext>(options =>
+               options.UseMySql(
+                    string.Format(@"Server={0};database={1};uid={2};pwd={3};",
+                         runtime.MySQL.Host,
+                         runtime.MySQL.Resource,
+                         runtime.MySQL.User,
+                         runtime.MySQL.Password)),
+                         contextLifetime, optionsLifetime);
             return services;
         }
 
