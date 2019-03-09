@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Title>Inkton NesterWorks</Title>
     <PackageId>Inkton.NesterWorks</PackageId>
-    <PackageVersion>1.6.5</PackageVersion>
+    <PackageVersion>1.6.6</PackageVersion>
     <PackageTags>paas,docker,nest.yt</PackageTags>
     <Authors>nest.yt</Authors>
     <Description>A utility to manage run-time Nest.yt services</Description>
@@ -19,7 +19,7 @@
     <AssemblyName>Inkton.NesterWorks</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Inkton.NestModel" Version="1.1.0" />
+    <PackageReference Include="Inkton.NestModel" Version="1.1.2" />
   </ItemGroup>  
   <ItemGroup>
     <PackageReference Include="System.Collections" Version="4.3.0" />
@@ -28,16 +28,16 @@
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.2" />
   </ItemGroup>
     <ItemGroup>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />  
     <PackageReference Include="SlackAPI" Version="1.0.7" />  
   </ItemGroup>
