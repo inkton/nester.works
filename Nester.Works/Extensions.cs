@@ -19,7 +19,7 @@
     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
@@ -104,16 +104,16 @@ namespace Inkton.Nester
         // identification and safety 
         // https://github.com/inkton/nester.works/wiki#nestyt-standard-responses
 
-        public static JsonResult NestResult(
+       public static JsonResult NestResult<T>(
             this ControllerBase controller,
-            int code, 
-            string text = null, 
+            T code = default(T), 
             string notes = null,
             int htmlStatus = 200) 
+                where T : System.Enum
         {
             Result<EmptyPayload> result = new Result<EmptyPayload>();
-            result.Code = code;
-            result.Text = text;
+            result.Code = Convert.ToInt32(code);
+            result.Text = Enum.GetName(typeof(T), code);
             result.Notes = notes;
 
             JsonResult jResult = new JsonResult(result);
@@ -122,23 +122,22 @@ namespace Inkton.Nester
             return jResult;    
         }
 
-        public static JsonResult NestResultSingle<T>(
+        public static JsonResult NestResultSingle<D>(
             this ControllerBase controller,
-            T data,
-            int code = 0, 
-            string text = null, 
+            int code, string text, D data,
             string notes = null,
-            int htmlStatus = 200) where T : CloudObject, new()
+            int htmlStatus = 200) 
+                where D : ICloudObject, new()
         {
-            Result<T> result = new Result<T>();
+            Result<D> result = new Result<D>();
             result.Code = code;
             result.Text = text;
             result.Notes = notes;
-            result.Data = new DataContainer<T>();
+            result.Data = new DataContainer<D>();
             result.Data.Payload = data;
             
             var serializerSettings = new JsonSerializerSettings();
-            serializerSettings.ContractResolver = new DataContainerResolver(new T().GetObjectName());
+            serializerSettings.ContractResolver = new DataContainerResolver(new D().GetObjectName());
 
             JsonResult jResult = new JsonResult(result, serializerSettings);
             jResult.StatusCode = htmlStatus;
@@ -146,28 +145,55 @@ namespace Inkton.Nester
             return jResult;            
         }
 
-        public static JsonResult NestResultMultiple<T>(
+        public static JsonResult NestResultSingle<T,D>(
             this ControllerBase controller,
-            List<T> data,
-            int code = 0, 
-            string text = null, 
+            T code, D data,
             string notes = null,
-            int htmlStatus = 200) where T : CloudObject, new()
+            int htmlStatus = 200) 
+                where T : System.Enum
+                where D : ICloudObject, new()
         {
-            Result<List<T>> result = new Result<List<T>>();
-            result.Code = 0;
+            return NestResultSingle(controller,
+                Convert.ToInt32(code), 
+                Enum.GetName(typeof(T), code),
+                data, notes);         
+        }
+
+        public static JsonResult NestResultMultiple<D>(
+            this ControllerBase controller,
+            int code, string text, List<D> data,
+            string notes = null,
+            int htmlStatus = 200) 
+                where D : ICloudObject, new()
+        {
+            Result<List<D>> result = new Result<List<D>>();
+            result.Code = code;
             result.Text = text;
             result.Notes = notes;
-            result.Data = new DataContainer<List<T>>();
+            result.Data = new DataContainer<List<D>>();
             result.Data.Payload = data;
 
             var serializerSettings = new JsonSerializerSettings();
-            serializerSettings.ContractResolver = new DataContainerResolver(new T().GetCollectionName());
+            serializerSettings.ContractResolver = new DataContainerResolver(new D().GetCollectionName());
 
             JsonResult jResult = new JsonResult(result, serializerSettings);
             jResult.StatusCode = htmlStatus;
 
             return jResult;
         }
+
+        public static JsonResult NestResultMultiple<T,D>(
+            this ControllerBase controller,
+            T code, List<D> data,
+            string notes = null,
+            int htmlStatus = 200) 
+                where T : System.Enum
+                where D : ICloudObject, new()
+        {
+            return NestResultMultiple(controller,
+                Convert.ToInt32(code), 
+                Enum.GetName(typeof(T), code),
+                data, notes, htmlStatus);
+        }        
     }
 }
