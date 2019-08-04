@@ -61,7 +61,7 @@ namespace Inkton.Nester
         Server = 0x2,            
     }
 
-    public class Runtime
+    public class NesterServices
     {
         public delegate object ReceiveParser(IDictionary<string, object> headers, string message);
 
@@ -72,13 +72,13 @@ namespace Inkton.Nester
         private IDictionary<String, Object> _settings;
         private int _serviceTimeoutSec = 180;
 
-        public Runtime()
+        public NesterServices()
         {
             _enviorenment = Enviorenment.Production;
             Setup(QueueMode.None);
         }
 
-        public Runtime(QueueMode mode,
+        public NesterServices(QueueMode mode,
             int serviceTimeoutSec = 180,
             Enviorenment enviorenment = Enviorenment.Production)
         {
