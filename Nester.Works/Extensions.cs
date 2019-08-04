@@ -37,8 +37,8 @@ namespace Inkton.Nester
             this IServiceCollection services, 
             QueueMode mode = QueueMode.None, int serviceTimeoutSec = 180)
         {
-            services.AddTransient<Runtime>(
-                runtime => new Runtime(mode,                     
+            services.AddTransient<NesterServices>(
+                NesterServices => new NesterServices(mode,                     
                     serviceTimeoutSec,
                     Enviorenment.Production));
             return services;
@@ -49,7 +49,7 @@ namespace Inkton.Nester
             ServiceLifetime contextLifetime = ServiceLifetime.Scoped, 
             ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) where TContext : DbContext
         {
-            Runtime runtime = new Runtime();
+            NesterServices runtime = new NesterServices();
             services.AddDbContext<TContext>(options =>
                options.UseMySql(
                     string.Format(@"Server={0};database={1};uid={2};pwd={3};",
@@ -66,7 +66,7 @@ namespace Inkton.Nester
             ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
             ServiceLifetime optionsLifetime = ServiceLifetime.Scoped) where TContext : DbContext
         {
-            Runtime runtime = new Runtime();
+            NesterServices runtime = new NesterServices();
             services.AddDbContext<TContext>(options =>
                options.UseMySql(
                     string.Format(@"Server={0};database={1};uid={2};pwd={3};",
